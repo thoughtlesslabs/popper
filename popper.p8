@@ -25,19 +25,24 @@ function kern()
 		end
 end
 
-function drawkern()
-	cls()	
-	for i=1,#x do
-		if x[i]+x[i]>20 then
-			print("⬇️",x[i],y[i])
-		else
-			print("⬇️",x[i],y[i]+10)
+function updatekern()
+	if btnp(4) then
+		for i=1,#x do
+			v[i]=false
 		end
 	end
 end
 
-function updatekern()
 
+function drawkern()
+	local i
+	
+	cls(5)	
+	for i=1,#x do
+		if v[i] then
+			print("⬇️",x[i],y[i])
+		end
+	end
 end
 
 function _draw()
