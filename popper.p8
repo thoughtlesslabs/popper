@@ -24,6 +24,7 @@ function updatestart()
 	mode="game"
 	kern()
 	pop=false
+	popcount = 0
 	if btnp(4) then
 		updatekern()
 	end
@@ -41,13 +42,17 @@ function kern()
 end
 
 function updatekern()
-	if btnp(4) and pop==false then
-		for i=1,#x do
-			v[i]=false
-		end
- sfx(0)
- pop = true
-	end
+--	allpopped = false
+	if btnp(4) then
+			randnum=flr(rnd(#x+1))
+			if v[randnum]==false then
+			elseif v[randnum] then
+				v[randnum]=false
+				pop=true
+				sfx(0)
+				popcount+=1
+			end
+ end
 end
 
 function drawkern()
@@ -63,8 +68,8 @@ function drawkern()
 	end
 	
 	if not(pop) then
-		print("press 🅾️",50,10,7)
-	else
+		print("press 🅾️ to pop",35,10,7)
+	elseif popcount==#x then
 		retry()
 	end
 end	
