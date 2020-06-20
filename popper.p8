@@ -65,7 +65,7 @@ function drawkern()
 	end
 	
 	if not(pop) then
-		print("press z",50,10,7)
+		print("press 🅾️",50,10,7)
 	else
 		retry()
 	end
