@@ -16,8 +16,6 @@ function _update60()
 		updatestart()
 	elseif mode=="game" then
 		updatekern()
-	elseif mode=="retry" then
-		updateretry()
 	end
 end
 
@@ -89,8 +87,6 @@ function _draw()
 		drawkern()
 	elseif mode=="start" then
 		updatestart()
-	elseif mode=="retry" then
-		retry()
 	end
 end
 __gfx__
