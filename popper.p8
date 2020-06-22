@@ -11,7 +11,7 @@ function _init()
 end
 
 --set game mode
-function _update60()
+function _update()
 	if mode=="start" then
 		updatestart()
 	elseif mode=="game" then
@@ -45,6 +45,15 @@ function kern()
 		end
 end
 
+--kernel jitter
+
+function jitter()
+	jit={}
+	for i=1,50 do
+		add(jit,rnd(2))
+	end
+end
+
 --pop kernels base on user input
 function updatekern()
 --	allpopped = false
@@ -66,10 +75,11 @@ end
 function drawkern()
 	local i
 	cls(5)
+	jitter()
 	--rectfill(35,35,95,60,4)	
 	for i=1,#x do
 		if v[i] then
-			spr(2,x[i],y[i])
+			spr(2,x[i]+rnd(jit),y[i]+rnd(jit))
 		elseif pop then
 			spr(1,x[i]+5,y[i]+5)
 		end
