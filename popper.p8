@@ -10,7 +10,7 @@ function _init()
 	mode="start"
 end
 
-
+--set game mode
 function _update60()
 	if mode=="start" then
 		updatestart()
@@ -19,6 +19,7 @@ function _update60()
 	end
 end
 
+--update and reset game
 function updatestart()
 	cls()
 	mode="game"
@@ -30,22 +31,29 @@ function updatestart()
 	end
 end
 
+--generate popcorn kernels
 function kern()
 		x={}
 		y={}
 		v={}
-		for i=1,15 do 
-			add(x,mid(1,rnd(110),110))
-			add(y,mid(1,rnd(110),110))
+  n={}
+		for i=1,50 do 
+			add(x,flr(mid(1,rnd(110),110)))
+			add(y,flr(mid(1,rnd(110),110)))
 			add(v,true)
+			add(n,i)
 		end
 end
 
+--pop kernels base on user input
 function updatekern()
 --	allpopped = false
 	if btnp(4) then
-			randnum=flr(rnd(#x+1))
-			if v[randnum]==false then
+   --pick random kernel to pop
+			randnum=flr(rnd(n))
+			--check if kernel is already popped
+   if v[randnum]==false then
+    del(n,randnum)
 			elseif v[randnum] then
 				v[randnum]=false
 				pop=true
@@ -57,7 +65,7 @@ end
 
 function drawkern()
 	local i
-	cls(5)	
+	cls(5)
 	--rectfill(35,35,95,60,4)	
 	for i=1,#x do
 		if v[i] then
