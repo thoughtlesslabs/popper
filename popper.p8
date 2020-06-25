@@ -8,6 +8,14 @@ __lua__
 function _init()
 	cls()
 	mode="start"
+	levelnum=1
+	levels={}
+	levels[1]="ff"
+	levels[2]="fff"
+	levels[3]="ffffff"
+	levels[4]="ffffffffff"
+	levels[5]="fffffffffffffffff"
+	levels[6]="fffffffffffffffffffffff"
 end
 
 --set game mode
@@ -15,28 +23,34 @@ function _update()
 	if mode=="start" then
 		updatestart()
 	elseif mode=="game" then
-		updatekern()
+		drawkern()
 	end
 end
 
 --update and reset game
 function updatestart()
-	cls()
+	--cls()
 	mode="game"
-	level="ffff"
+	level=levels[levelnum]
 	kern(level)
 	pop=false
-	popcount = 0
-	if btnp(4) then
-		updatekern()
-	end
+	popcount=0
 end
 
 --user select kernel count
 function kcount()
 	if btnp(0) then
-		level="ffffff"
-		kern(level)
+		if levelnum >1 then
+			levelnum-=1
+			mode="start"
+			return
+		end
+	elseif btnp(1) then
+		if levelnum < #levels then
+			levelnum+=1
+	 	mode="start"
+	 	return
+		end
 	end
 end
 
@@ -51,7 +65,7 @@ function kern(lvl)
 		chr=sub(lvl,i,i)
 		if chr=="f" then
 			add(x,flr(mid(1,rnd(110),110)))
-			add(y,flr(mid(1,rnd(110),110)))
+			add(y,flr(mid(30,rnd(110),110)))
 			add(v,true)
 			add(n,i)
 		end
@@ -68,29 +82,32 @@ function jitter()
 end
 
 --pop kernels base on user input
-function updatekern()
---	allpopped = false
-	if btnp(4) then
-   --pick random kernel to pop
-			randnum=flr(rnd(n))
-			--check if kernel is already popped
-   if v[randnum]==false then
-    del(n,randnum)
-			elseif v[randnum] then
-				v[randnum]=false
-				pop=true
-				sfx(0)
-				popcount+=1
-			end
+function updatekern() 
+ --pick random kernel to pop
+	randnum=flr(rnd(n))
+	--check if kernel is already popped
+ if v[randnum]==false then
+  del(n,randnum)
+	elseif v[randnum] then
+		v[randnum]=false
+		pop=true
+		sfx(0)
+		popcount+=1
  end
+end
+
+function kernpop()
+	if btnp(4) then
+		updatekern()
+	end
 end
 
 function drawkern()
 	local i
 	cls(5)
-	jitter()
+	kernpop()
 	kcount()
-	--rectfill(35,35,95,60,4)	
+	jitter()
 	for i=1,#x do
 		if v[i] then
 			spr(2,x[i]+rnd(jit),y[i]+rnd(jit))
@@ -100,7 +117,10 @@ function drawkern()
 	end
 	
 	if not(pop) then
-		print("press 🅾️ to pop",35,10,7)
+		print("how many kernels today?",20,10,7)
+		print("⬅️ "..#level.." ➡️",50,20,7)
+		print("press 🅾️ to pop",35,30,7)
+
 	elseif popcount==#x then
 		retry()
 	end
