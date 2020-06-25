@@ -74,7 +74,6 @@ function kern(lvl)
 end
 
 --kernel jitter
-
 function jitter()
 	jit={}
 	for i=1,50 do
@@ -90,6 +89,7 @@ function updatekern()
 	--check if kernel is already popped
  if v[randnum]==false then
   del(n,randnum)
+  updatekern()
 	elseif v[randnum] then
 		v[randnum]=false
 		pop=true
