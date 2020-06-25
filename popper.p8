@@ -23,7 +23,8 @@ end
 function updatestart()
 	cls()
 	mode="game"
-	kern()
+	level="ffff"
+	kern(level)
 	pop=false
 	popcount = 0
 	if btnp(4) then
@@ -31,18 +32,30 @@ function updatestart()
 	end
 end
 
+--user select kernel count
+function kcount()
+	if btnp(0) then
+		level="ffffff"
+		kern(level)
+	end
+end
+
 --generate popcorn kernels
-function kern()
-		x={}
-		y={}
-		v={}
-  n={}
-		for i=1,50 do 
+function kern(lvl)
+	local i,chr
+	x={}
+	y={}
+	v={}
+ n={}
+	for i=1,#lvl do 
+		chr=sub(lvl,i,i)
+		if chr=="f" then
 			add(x,flr(mid(1,rnd(110),110)))
 			add(y,flr(mid(1,rnd(110),110)))
 			add(v,true)
 			add(n,i)
 		end
+	end
 end
 
 --kernel jitter
@@ -76,6 +89,7 @@ function drawkern()
 	local i
 	cls(5)
 	jitter()
+	kcount()
 	--rectfill(35,35,95,60,4)	
 	for i=1,#x do
 		if v[i] then
