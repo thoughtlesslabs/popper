@@ -102,7 +102,7 @@ end
 function rotater()
 	r={}
 	for i=1,#x do
- 	add(r,flr(rnd(2)+1))
+ 	add(r,flr(rnd(4)+1))
 	end
 end	
 
@@ -124,8 +124,12 @@ function drawkern()
 		elseif pop then
 			if r[i]==1 then
 				spr(1,x[i]+5,y[i]+5,1,1,true)
-			else
+			elseif r[i]==2 then
 				spr(1,x[i]+5,y[i]+5,1,1,false)
+			elseif r[i]==3 then
+				spr(1,x[i]+5,y[i]+5,1,1,false,true)
+			elseif r[i]==4 then
+				spr(1,x[i]+5,y[i]+5,1,1,true,false)
 			end
 		end
 	end	
