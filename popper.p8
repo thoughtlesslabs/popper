@@ -9,6 +9,7 @@ function _init()
 	cls()
 	mode="start"
 	shake=0
+	gametimer=0
 	levelnum=1
 	levels={}
 	levels[1]="ff"
@@ -37,6 +38,7 @@ function updatestart()
 	popcount=0
 	mode="game"
 	rotater()
+	gametimer=30
 end
 
 --user select kernel count
@@ -146,10 +148,14 @@ function drawkern()
 end	
 
 function retry()
-	rectfill(35,35,95,60,4)
-	print("play again?",45,40,7)
-	print("press ❎",50,50,7)
-	update_retry()
+	gametimer-=1
+	if gametimer<=0 then
+		shake=0
+		rectfill(35,35,95,60,4)
+		print("play again?",45,40,7)
+		print("press ❎",50,50,7)
+		update_retry()
+	end
 end
 
 function update_retry()
