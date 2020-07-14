@@ -1,5 +1,5 @@
 pico-8 cartridge // http://www.pico-8.com
-version 27
+version 29
 __lua__
 --popper
 --thoughtless labs
@@ -8,6 +8,7 @@ __lua__
 function _init()
 	cls()
 	mode="start"
+	shake=0
 	levelnum=1
 	levels={}
 	levels[1]="ff"
@@ -20,6 +21,7 @@ end
 
 --set game mode
 function _update()
+	doshake()
 	if mode=="start" then
 		updatestart()
 	elseif mode=="game" then
@@ -29,7 +31,6 @@ end
 
 --update and reset game
 function updatestart()
-	--cls()
 	level=levels[levelnum]
 	kern(level)
 	pop=false
@@ -85,6 +86,7 @@ end
 --pop kernels base on user input
 function updatekern() 
  mode="playing"
+ shake=0.1
  --pick random kernel to pop
 	randnum=flr(rnd(n))
 	--check if kernel is already popped
@@ -161,6 +163,25 @@ function _draw()
 		drawkern()
 	elseif mode=="start" then
 		updatestart()
+	end
+end
+-->8
+--gimme the juice
+
+--camera shake
+function doshake()
+ --	-16 to +16
+	local shakex=16-rnd(32)
+	local shakey=16-rnd(32)
+	
+	shakex=shakex*shake
+	shakey=shakey*shake
+
+	camera(shakex,shakey)
+	
+	shake=shake*0.95
+	if shake<0.05 then
+		shake=0
 	end
 end
 __gfx__
