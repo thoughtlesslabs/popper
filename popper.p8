@@ -12,12 +12,11 @@ function _init()
 	gametimer=0
 	levelnum=1
 	levels={}
-	levels[1]="ff"
-	levels[2]="fff"
-	levels[3]="ffffff"
-	levels[4]="ffffffffff"
-	levels[5]="fffffffffffffffff"
-	levels[6]="fffffffffffffffffffffff"
+	levels[1]="ffff"
+	levels[2]="ffffffff"
+	levels[3]="fffffffffffff"
+	levels[4]="fffffffffffffffffffff"
+	levels[5]="ffffffffffffffffffffffffff"
 end
 
 --set game mode
@@ -41,8 +40,23 @@ function updatestart()
 	gametimer=30
 end
 
+function lvlname()
+	if levelnum==1 then
+		levelsname="xtra small"
+	elseif levelnum==2 then
+		levelsname="  small  "
+	elseif levelnum==3 then
+		levelsname="  medium  "
+	elseif levelnum==4 then
+		levelsname="  large  "
+	elseif levelnum==5 then
+		levelsname="xtra large"	
+	end
+end
+
 --user select kernel count
 function kcount()
+	lvlname()
 	if mode!="playing" then
 	if btnp(0) then
 		if levelnum >1 then
@@ -138,8 +152,8 @@ function drawkern()
 		end
 	end	
 	if not(pop) then
-		print("how many kernels today?",20,10,7)
-		print("⬅️ "..#level.." ➡️",50,20,7)
+		print("what size today?",35,10,7)
+		print("⬅️ "..levelsname.." ➡️",35,20,7)
 		print("press 🅾️ to pop",35,30,7)
 
 	elseif popcount==#x then
