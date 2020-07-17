@@ -20,7 +20,7 @@ function _init()
 	part={}
 end
 
-function _update()
+function _update60()
 	updateparts()
 	if mode=="start" then
 		updatestart()
@@ -70,14 +70,15 @@ end
 
 -- kernel explosion
 function popped(_k)
-	for i=0,10 do
+	for i=0,50 do
 		local _ang = rnd()
-		local _dx = sin(_ang)*0.2
-		local _dy = cos(_ang)*2
-		addpart(_k.x,_k.y,_dx,_dy,1,60,{5,6})
+		local _dx = sin(_ang)/100
+		local _dy = sin(_ang)/10
+		addpart(_k.x,_k.y+10,_dx,_dy,1,100,{5,6})
+		addpart(_k.x+2,_k.y+10,_dx,_dy/2,1,100,{5,6})
+		addpart(_k.x+3,_k.y+10,_dx,_dy,1,100,{5,6})
 	end
 end
-
 
 --particle updater
 function updateparts()
@@ -98,7 +99,7 @@ function updateparts()
 		
 		--apply gravity
 			if _p.tpe==1 then
-			_p.dy-=0.1
+			_p.dy-=0.009
 			end
 
 		--move particle
@@ -112,9 +113,7 @@ function drawparts()
 	for i=1,#part do
 		_p=part[i]
 		--pixel particle
-		if _p.tpe == 0 or _p.tpe==1 then
-			pset(_p.x,_p.y,_p.col)
-		end
+		pset(_p.x,_p.y,_p.col)
 	end
 end
 
@@ -242,7 +241,6 @@ function drawgame()
 	for i=1,#kernels do
 		if kernels[i].v then
 			spr(2,kernels[i].x+rnd(jit),kernels[i].y+rnd(jit))
-		--	print(kernels[i].n,kernels[i].x+5,kernels[i].y+5)
 		elseif kernels[i].p then
 			if kernels[i].r==1 then
 				spr(1,kernels[i].x,kernels[i].y+5,1,1,true)
