@@ -9,6 +9,7 @@ function _init()
 	cls()
 	mode="start"
 	shake=0
+	move=0
 	gametimer=0
 	levelnum=1
 	levels={}
@@ -70,13 +71,13 @@ end
 
 -- kernel explosion
 function popped(_k)
-	for i=0,50 do
+	for i=0,10 do
 		local _ang = rnd()
-		local _dx = sin(_ang)/100
+		local _dx = sin(_ang)/50
 		local _dy = sin(_ang)/10
-		addpart(_k.x,_k.y+10,_dx,_dy,1,100,{5,6})
-		addpart(_k.x+2,_k.y+10,_dx,_dy/2,1,100,{5,6})
-		addpart(_k.x+3,_k.y+10,_dx,_dy,1,100,{5,6})
+		addpart(_k.x,_k.y+10,_dx,_dy,1,100,{7,5,6})
+		addpart(_k.x+2,_k.y+10,_dx,_dy/10,1,100,{7,5,6})
+		addpart(_k.x+4,_k.y+10,_dx,_dy/2,1,100,{7,5,6})
 	end
 end
 
@@ -170,7 +171,9 @@ end
 --pop kernels base on user input
 function updategame() 
  if popcount<#kernels then
+ 	if btnp(4) then
  	kernpop()
+ 	end
  else
  	updategameover()
  end
@@ -178,20 +181,19 @@ end
 
 function kernpop()
  rkern=flr(rnd(#kernels)+1)
- if btnp(4) then
- 	if kernels[rkern].p==true then
- 		del(kernels,kernels[rkern].n)
- 		kernpop()
- 	else
- 		sfx(0)
- 		shake=0.1
- 		kernels[rkern].p=true
- 		kernels[rkern].v=false
- 		popped(kernels[rkern])
- 		popcount+=1
- 	end
+ if kernels[rkern].p==true then
+ 	del(kernels,kernels[rkern].n)
+		kernpop()
+	else
+		sfx(0)
+		shake=0.1
+		kernels[rkern].p=true
+		kernels[rkern].v=false
+		popped(kernels[rkern])
+		popcount+=1
 	end
 end
+
 
 function updategameover()
 	gametimer-=1
@@ -235,9 +237,6 @@ function drawgame()
 	cls(1)
 	drawparts()
 	jitter()
-	print(gametimer)
-	print(popcount,20)
-	print(#kernels)
 	for i=1,#kernels do
 		if kernels[i].v then
 			spr(2,kernels[i].x+rnd(jit),kernels[i].y+rnd(jit))
