@@ -25,17 +25,10 @@ function _update()
 	if mode=="start" then
 		updatestart()
 	elseif mode=="game" then
-		drawkern()
+		updategame()
+	elseif mode=="gameover" then
+		updategameover()	
 	end
-end
-
---update and reset game
-function updatestart()
-	level=levels[levelnum]
-	kern(level)
-	popcount=0
-	mode="game"
-	gametimer=30
 end
 
 function lvlname()
@@ -52,25 +45,19 @@ function lvlname()
 	end
 end
 
---user select kernel count
-function kcount()
-	lvlname()
-	if mode!="playing" then
-	if btnp(0) then
-		if levelnum >1 then
-			levelnum-=1
-			mode="start"
-			return
-		end
-	elseif btnp(1) then
-		if levelnum < #levels then
-			levelnum+=1
-	 	mode="start"
-	 	return
-		end
+function _draw()
+	if mode=="start" then
+		drawstart()
+	elseif mode=="game" then
+		drawgame()
+	elseif mode=="gameover" then
+		drawgameover()
 	end
 end
-end
+
+
+-->8
+--gimme the juice
 
 --kernel jitter
 function jitter()
@@ -78,89 +65,7 @@ function jitter()
 	for i=1,50 do
 		add(jit,rnd(2))
 	end
-end
-
---pop kernels base on user input
-function updatekern() 
- mode="playing"
- shake=0.1
- rkern=flr(rnd(#kernels)+1)
- if kernels[rkern].v==false then
- 	del(kernels,kernels[rkern].n)
- 	updatekern()
- elseif kernels[rkern].v then
- 	sfx(0)
- 	kernels[rkern].v=false
- 	kernels[rkern].p=true
- 	popcount+=1
- end
 end	
-
-function kernpop()
-	if btnp(4) then
-		updatekern()
-	end
-end
-
-function drawkern()
-	local i
-	cls(1)
-	print(popcount,20)
-	print(#kernels)
-	kernpop()
-	kcount()
-	jitter()
-	for i=1,#kernels do
-		if kernels[i].v then
-			spr(2,kernels[i].x+rnd(jit),kernels[i].y+rnd(jit))
-		elseif kernels[i].p then
-			if kernels[i].r==1 then
-				spr(1,kernels[i].x+5,kernels[i].y+5,1,1,true)
-			elseif kernels[i]==2 then
-				spr(1,kernels[i].x+5,kernels[i].y+5,1,1,false)
-			elseif kernels[i]==3 then
-				spr(1,kernels[i].x+5,kernels[i].y+5,1,1,false,true)
-			elseif kernels[i]==4 then
-				spr(1,kernels[i].x+5,kernels[i].y+5,1,1,true,false)
-			end
-		end
-	end	
-	if mode=="game" then
-		print("what size today?",35,10,7)
-		print("⬅️ "..levelsname.." ➡️",35,20,7)
-		print("press 🅾️ to pop",35,30,7)
-
-	elseif popcount==#kernels then
-		retry()
-	end
-end	
-
-function retry()
-	gametimer-=1
-	if gametimer<=0 then
-		shake=0
-		rectfill(35,35,95,60,4)
-		print("play again?",45,40,7)
-		print("press ❎",50,50,7)
-		update_retry()
-	end
-end
-
-function update_retry()
-	if btn(5) then
-		mode="start"
-	end
-end
-
-function _draw()
-	if mode=="game" or mode=="playing" then
-		drawkern()
-	elseif mode=="start" then
-		updatestart()
-	end
-end
--->8
---gimme the juice
 
 --camera shake
 function doshake()
@@ -179,15 +84,74 @@ function doshake()
 	end
 end
 -->8
---					to do list
+-- update functions
 
---1.		popcorn moves when popped
---2. 	start menu page
---3.  animated kernel popping
---4.  steam rising pre-pop
+--update and reset game
+function updatestart()
+	level=levels[levelnum]
+	kern(level)
+	popcount=0
+	gametimer=30
+	levelselect()
+	if btnp(4) then
+		mode="game"
+	end
+end
+
+function levelselect()
+	if btnp(0) then
+		if levelnum >1 then
+			levelnum-=1
+		end
+	elseif btnp(1) then
+		if levelnum < #levels then
+			levelnum+=1
+		end
+	end
+end
+
+function gupdate()
+end
+
+function updategameover()
+	if btnp(5) then
+		mode="game"
+	end
+end
+
+--pop kernels base on user input
+function updategame() 
+ if popcount<#kernels then
+ 	if btnp(4) then
+ 		rkern=flr(rnd(#kernels)+1)
+ 		if kernels[rkern].p==true then
+ 			del(kernels,kernels[rkern].n)
+ 			updategame()
+ 		elseif kernels[rkern].v then
+ 			sfx(0)
+ 			shake=0.1
+ 			kernels[rkern].p=true
+ 			kernels[rkern].v=false
+ 			popcount+=1
+ 		end
+ 	end
+ else
+ 	mode="gameover"
+ end
+end
+
+function updategameover()
+	gametimer-=1
+	if gametimer<=0 then
+		if btn(5) then
+			mode="start"
+		end
+	end
+end
 -->8
 --kernels
 
+-- give kernels attributes
 function addkern(_i)
 	k={}
 	k.x=mid(1,rnd(110),110)
@@ -209,6 +173,54 @@ function kern(lvl)
 		end
 	end
 end
+-->8
+--draw
+
+function drawgame()
+	local i
+	cls(1)
+	print(popcount,20)
+	print(#kernels)
+	for i=1,#kernels do
+		if kernels[i].v then
+			spr(2,kernels[i].x+rnd(jit),kernels[i].y+rnd(jit))
+		--	print(kernels[i].n,kernels[i].x+5,kernels[i].y+5)
+		elseif kernels[i].p then
+			if kernels[i].r==1 then
+				spr(1,kernels[i].x+5,kernels[i].y+5,1,1,true)
+			elseif kernels[i].r==2 then
+				spr(1,kernels[i].x+5,kernels[i].y+5,1,1,false)
+			elseif kernels[i].r==3 then
+				spr(1,kernels[i].x+5,kernels[i].y+5,1,1,false,true)
+			elseif kernels[i].r==4 then
+				spr(1,kernels[i].x+5,kernels[i].y+5,1,1,true,false)
+			end
+		end
+	end	
+end
+
+function drawstart()
+	cls()
+	print("what size today?",35,10,7)
+	print("⬅️ "..levelnum.." ➡️",35,20,7)
+	print("press 🅾️ to pop",35,30,7)
+end
+
+function drawgameover()
+	if gametimer<=0 then
+		shake=0
+		rectfill(35,35,95,60,4)
+		print("play again?",45,40,7)
+		print("press ❎",50,50,7)
+	end
+end
+-->8
+--					to do list
+
+--1.		popcorn moves when popped
+--2. 	start menu page
+--3.  animated kernel popping
+--4.  steam rising pre-pop
 __gfx__
 00000000000776000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000009977600004499000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
