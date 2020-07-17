@@ -17,31 +17,17 @@ function _init()
 	levels[3]="fffffffffffff"
 	levels[4]="fffffffffffffffffffff"
 	levels[5]="ffffffffffffffffffffffffff"
+	part={}
 end
 
---set game mode
 function _update()
-	doshake()
+	updateparts()
 	if mode=="start" then
 		updatestart()
 	elseif mode=="game" then
 		updategame()
 	elseif mode=="gameover" then
-		updategameover()	
-	end
-end
-
-function lvlname()
-	if levelnum==1 then
-		levelsname="xtra small"
-	elseif levelnum==2 then
-		levelsname="  small  "
-	elseif levelnum==3 then
-		levelsname="  medium  "
-	elseif levelnum==4 then
-		levelsname="  large  "
-	elseif levelnum==5 then
-		levelsname="xtra large"	
+		updategameover()
 	end
 end
 
@@ -66,6 +52,71 @@ function jitter()
 		add(jit,rnd(2))
 	end
 end	
+
+-- particles
+function addpart(_x,_y,_dx,_dy,_type,_maxage,_col)
+ local _p = {}
+ _p.x=_x
+ _p.y=_y
+ _p.dx=_dx
+ _p.dy=_dy
+ _p.tpe=_type
+ _p.mage=_maxage
+ _p.age=0
+ _p.col=0
+	_p.colarr=_col
+ add(part,_p)
+end
+
+-- kernel explosion
+function popped(_k)
+	for i=0,10 do
+		local _ang = rnd()
+		local _dx = sin(_ang)*0.2
+		local _dy = cos(_ang)*2
+		addpart(_k.x,_k.y,_dx,_dy,1,60,{5,6})
+	end
+end
+
+
+--particle updater
+function updateparts()
+	local _p
+	for i=#part,1,-1 do
+		_p=part[i]
+		_p.age+=1
+		if _p.age>_p.mage then
+			del(part,part[i])
+		else
+			if #_p.colarr==1 then
+				_p.col=_p.colarr[1]
+			else
+				local _ci=_p.age/_p.mage
+				_ci=1+flr(_ci*#_p.colarr)
+				_p.col=_p.colarr[_ci]
+			end
+		
+		--apply gravity
+			if _p.tpe==1 then
+			_p.dy-=0.1
+			end
+
+		--move particle
+			_p.x+=_p.dx
+			_p.y+=_p.dy
+		end
+	end
+end
+
+function drawparts()
+	for i=1,#part do
+		_p=part[i]
+		--pixel particle
+		if _p.tpe == 0 or _p.tpe==1 then
+			pset(_p.x,_p.y,_p.col)
+		end
+	end
+end
 
 --camera shake
 function doshake()
@@ -98,6 +149,7 @@ function updatestart()
 	end
 end
 
+--player select level
 function levelselect()
 	if btnp(0) then
 		if levelnum >1 then
@@ -110,9 +162,6 @@ function levelselect()
 	end
 end
 
-function gupdate()
-end
-
 function updategameover()
 	if btnp(5) then
 		mode="game"
@@ -122,27 +171,33 @@ end
 --pop kernels base on user input
 function updategame() 
  if popcount<#kernels then
- 	if btnp(4) then
- 		rkern=flr(rnd(#kernels)+1)
- 		if kernels[rkern].p==true then
- 			del(kernels,kernels[rkern].n)
- 			updategame()
- 		elseif kernels[rkern].v then
- 			sfx(0)
- 			shake=0.1
- 			kernels[rkern].p=true
- 			kernels[rkern].v=false
- 			popcount+=1
- 		end
- 	end
+ 	kernpop()
  else
- 	mode="gameover"
+ 	updategameover()
  end
+end
+
+function kernpop()
+ rkern=flr(rnd(#kernels)+1)
+ if btnp(4) then
+ 	if kernels[rkern].p==true then
+ 		del(kernels,kernels[rkern].n)
+ 		kernpop()
+ 	else
+ 		sfx(0)
+ 		shake=0.1
+ 		kernels[rkern].p=true
+ 		kernels[rkern].v=false
+ 		popped(kernels[rkern])
+ 		popcount+=1
+ 	end
+	end
 end
 
 function updategameover()
 	gametimer-=1
-	if gametimer<=0 then
+	if gametimer<0 then
+		mode="gameover"
 		if btn(5) then
 			mode="start"
 		end
@@ -179,6 +234,9 @@ end
 function drawgame()
 	local i
 	cls(1)
+	drawparts()
+	jitter()
+	print(gametimer)
 	print(popcount,20)
 	print(#kernels)
 	for i=1,#kernels do
@@ -187,13 +245,13 @@ function drawgame()
 		--	print(kernels[i].n,kernels[i].x+5,kernels[i].y+5)
 		elseif kernels[i].p then
 			if kernels[i].r==1 then
-				spr(1,kernels[i].x+5,kernels[i].y+5,1,1,true)
+				spr(1,kernels[i].x,kernels[i].y+5,1,1,true)
 			elseif kernels[i].r==2 then
-				spr(1,kernels[i].x+5,kernels[i].y+5,1,1,false)
+				spr(1,kernels[i].x,kernels[i].y+5,1,1,false)
 			elseif kernels[i].r==3 then
-				spr(1,kernels[i].x+5,kernels[i].y+5,1,1,false,true)
+				spr(1,kernels[i].x,kernels[i].y+5,1,1,false,true)
 			elseif kernels[i].r==4 then
-				spr(1,kernels[i].x+5,kernels[i].y+5,1,1,true,false)
+				spr(1,kernels[i].x,kernels[i].y+5,1,1,true,false)
 			end
 		end
 	end	
@@ -207,12 +265,10 @@ function drawstart()
 end
 
 function drawgameover()
-	if gametimer<=0 then
 		shake=0
 		rectfill(35,35,95,60,4)
 		print("play again?",45,40,7)
 		print("press ❎",50,50,7)
-	end
 end
 -->8
 --					to do list
