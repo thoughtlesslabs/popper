@@ -88,7 +88,7 @@ function updatekern()
  if kernels[rkern].v==false then
  	del(kernels,kernels[rkern].n)
  	updatekern()
- elseif kernels[rkern] then
+ elseif kernels[rkern].v then
  	sfx(0)
  	kernels[rkern].v=false
  	kernels[rkern].p=true
