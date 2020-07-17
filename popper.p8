@@ -36,7 +36,6 @@ function updatestart()
 	pop=false
 	popcount=0
 	mode="game"
-	rotater()
 	gametimer=30
 end
 
@@ -73,23 +72,6 @@ function kcount()
 	end
 end
 end
---generate popcorn kernels
-function kern(lvl)
-	local i,chr
-	x={}
-	y={}
-	v={}
- n={}
-	for i=1,#lvl do 
-		chr=sub(lvl,i,i)
-		if chr=="f" then
-			add(x,flr(mid(1,rnd(110),110)))
-			add(y,flr(mid(35,rnd(110),110)))
-			add(v,true)
-			add(n,i)
-		end
-	end
-end
 
 --kernel jitter
 function jitter()
@@ -104,24 +86,17 @@ function updatekern()
  mode="playing"
  shake=0.1
  --pick random kernel to pop
-	randnum=flr(rnd(n))
+	randnum=flr(rnd(kernels.n))
 	--check if kernel is already popped
- if v[randnum]==false then
-  del(n,randnum)
+ if k[randnum].v==false then
+  del(k.n,randnum)
   updatekern()
-	elseif v[randnum] then
-		v[randnum]=false
+	elseif k[randnum].v then
+		k[randnum].v=false
 		pop=true
 		sfx(0)
 		popcount+=1
  end
-end
-
-function rotater()
-	r={}
-	for i=1,#x do
- 	add(r,flr(rnd(4)+1))
-	end
 end	
 
 function kernpop()
@@ -133,14 +108,15 @@ end
 function drawkern()
 	local i
 	cls(1)
+	print(kernels[1].v)
 	kernpop()
 	kcount()
 	jitter()
-	for i=1,#x do
-		if v[i] then
-			spr(2,x[i]+rnd(jit),y[i]+rnd(jit))
+	for i=1,#kernels do
+		if kernels[i].v then
+			spr(2,kernels[i].x+rnd(jit),kernels[i].y+rnd(jit))
 		elseif pop then
-			if r[i]==1 then
+			if kernels[i].r==1 then
 				spr(1,x[i]+5,y[i]+5,1,1,true)
 			elseif r[i]==2 then
 				spr(1,x[i]+5,y[i]+5,1,1,false)
@@ -211,6 +187,31 @@ end
 --2. 	start menu page
 --3.  animated kernel popping
 --4.  steam rising pre-pop
+-->8
+--kernels
+
+function addkern(_i)
+	k={}
+	k.x=mid(1,rnd(110),110)
+	k.y=mid(1,rnd(110),110)
+	k.v=true
+	k.p=false
+	k.r=flr(rnd(4)+1)
+	k.n=_i
+	add(kernels,k)
+end
+
+--generate popcorn kernels
+function kern(lvl)
+	kernels={}
+	
+	for i=1,#lvl do 
+		chr=sub(lvl,i,i)
+		if chr=="f" then
+			addkern(i)
+		end
+	end
+end
 __gfx__
 00000000000776000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000009977600004499000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
