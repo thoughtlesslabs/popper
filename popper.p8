@@ -33,7 +33,6 @@ end
 function updatestart()
 	level=levels[levelnum]
 	kern(level)
-	pop=false
 	popcount=0
 	mode="game"
 	gametimer=30
@@ -85,17 +84,15 @@ end
 function updatekern() 
  mode="playing"
  shake=0.1
- --pick random kernel to pop
-	randnum=flr(rnd(kernels.n))
-	--check if kernel is already popped
- if k[randnum].v==false then
-  del(k.n,randnum)
-  updatekern()
-	elseif k[randnum].v then
-		k[randnum].v=false
-		pop=true
-		sfx(0)
-		popcount+=1
+ rkern=flr(rnd(#kernels)+1)
+ if kernels[rkern].v==false then
+ 	del(kernels,kernels[rkern].n)
+ 	updatekern()
+ elseif kernels[rkern] then
+ 	sfx(0)
+ 	kernels[rkern].v=false
+ 	kernels[rkern].p=true
+ 	popcount+=1
  end
 end	
 
@@ -108,31 +105,32 @@ end
 function drawkern()
 	local i
 	cls(1)
-	print(kernels[1].v)
+	print(popcount,20)
+	print(#kernels)
 	kernpop()
 	kcount()
 	jitter()
 	for i=1,#kernels do
 		if kernels[i].v then
 			spr(2,kernels[i].x+rnd(jit),kernels[i].y+rnd(jit))
-		elseif pop then
+		elseif kernels[i].p then
 			if kernels[i].r==1 then
-				spr(1,x[i]+5,y[i]+5,1,1,true)
-			elseif r[i]==2 then
-				spr(1,x[i]+5,y[i]+5,1,1,false)
-			elseif r[i]==3 then
-				spr(1,x[i]+5,y[i]+5,1,1,false,true)
-			elseif r[i]==4 then
-				spr(1,x[i]+5,y[i]+5,1,1,true,false)
+				spr(1,kernels[i].x+5,kernels[i].y+5,1,1,true)
+			elseif kernels[i]==2 then
+				spr(1,kernels[i].x+5,kernels[i].y+5,1,1,false)
+			elseif kernels[i]==3 then
+				spr(1,kernels[i].x+5,kernels[i].y+5,1,1,false,true)
+			elseif kernels[i]==4 then
+				spr(1,kernels[i].x+5,kernels[i].y+5,1,1,true,false)
 			end
 		end
 	end	
-	if not(pop) then
+	if mode=="game" then
 		print("what size today?",35,10,7)
 		print("⬅️ "..levelsname.." ➡️",35,20,7)
 		print("press 🅾️ to pop",35,30,7)
 
-	elseif popcount==#x then
+	elseif popcount==#kernels then
 		retry()
 	end
 end	
@@ -204,7 +202,6 @@ end
 --generate popcorn kernels
 function kern(lvl)
 	kernels={}
-	
 	for i=1,#lvl do 
 		chr=sub(lvl,i,i)
 		if chr=="f" then
