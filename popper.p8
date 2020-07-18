@@ -48,7 +48,8 @@ end
 
 --kernel jitter
 function jitter(_j)
-	if _j then
+	_j.j=true
+	if _j.j then
 	jit={}
 		for i=1,50 do
 			add(jit,rnd(2))
@@ -185,20 +186,17 @@ end
 
 function kernpop()
 	rkern=flr(rnd(#kernels)+1)
-	kernels[rkern].j=true
-	jitter(kernels[rkern].j)
-	if kernels[rkern].jtimer>0 then
-		if kernels[rkern].p==true then
-			del(kernels,kernels[rkern].n)
-			kernpop()
-		else
-			sfx(0)
-			shake=0.4
-			kernels[rkern].p=true
-			kernels[rkern].v=false
-			popped(kernels[rkern])
-			popcount+=1
-		end
+	jitter(kernels[rkern])
+	if kernels[rkern].p==true then
+		del(kernels,kernels[rkern].n)
+		kernpop()
+	else
+		sfx(0)
+		shake=0.4
+		kernels[rkern].p=true
+		kernels[rkern].v=false
+		popped(kernels[rkern])
+		popcount+=1
 	end
 end
 
