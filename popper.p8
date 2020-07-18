@@ -73,7 +73,7 @@ end
 function popped(_k)
 	for i=0,10 do
 		local _ang = rnd()
-		local _dx = sin(_ang)/50
+		local _dx = cos(_ang)/10
 		local _dy = sin(_ang)/10
 		addpart(_k.x,_k.y+10,_dx,_dy,1,100,{7,5,6})
 		addpart(_k.x+2,_k.y+10,_dx,_dy/10,1,100,{7,5,6})
@@ -235,7 +235,6 @@ end
 function drawgame()
 	local i
 	cls(1)
-	drawparts()
 	jitter()
 	for i=1,#kernels do
 		if kernels[i].v then
@@ -251,7 +250,8 @@ function drawgame()
 				spr(1,kernels[i].x,kernels[i].y+5,1,1,true,false)
 			end
 		end
-	end	
+	end
+	drawparts()	
 end
 
 function drawstart()
