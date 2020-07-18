@@ -196,11 +196,14 @@ end
 
 function movekern(mk)
 	mv=kernels[mk]
-	mv.dx=rnd(2)
+	mv.dx=rnd(5)
 	mv.dy=rnd(2)
 	if mv.p then
+		if mv.mvtimer>0 and mv.x<100 then
 		nextx=mv.x+mv.dx
 		nexty=mv.y+mv.dy
+		mv.mvtimer-=1
+		end
 	else
 		nextx=mv.x
 		nexty=mv.y
@@ -233,6 +236,7 @@ function addkern(_i)
 	k.p=false
 	k.r=flr(rnd(4)+1)
 	k.n=_i
+	k.mvtimer=10
 	add(kernels,k)
 end
 
