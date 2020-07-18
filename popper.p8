@@ -193,7 +193,7 @@ function kernpop()
 			kernpop()
 		else
 			sfx(0)
-			shake=0.1
+			shake=0.4
 			kernels[rkern].p=true
 			kernels[rkern].v=false
 			popped(kernels[rkern])
@@ -204,12 +204,21 @@ end
 
 function movekern(mk)
 	mv=kernels[mk]
-	mv.dx=rnd(5)
-	mv.dy=rnd(2)
+	mv.dx=flr(rnd(3)+1)
+	mv.dy=flr(rnd(3)+1)
+	
 	if mv.p then
 		if mv.mvtimer>0 then
-		nextx=mv.x+mv.dx
-		nexty=mv.y+mv.dy
+			if mv.dx==3 then
+				nextx=mv.x+mv.dx
+				nexty=mv.y+mv.dy
+			elseif mv.dx==2 then
+				nextx=mv.x-mv.dx
+				nexty=mv.y+mv.dy
+			else
+				nextx=mv.x-mv.dx
+				nexty=mv.y-mv.dy
+			end
 		mv.mvtimer-=1
 		end
 	else
@@ -271,21 +280,21 @@ end
 function drawgame()
 	local i
 	cls(1)
-	print(kernels[rkern].jtimer)
+	doshake()
 	for i=1,#kernels do
 		if kernels[i].v then
 			spr(2,kernels[i].x+rnd(jit),kernels[i].y+rnd(jit))
 		elseif kernels[i].p then
-			spr(1,kernels[i].x,kernels[i].y+5,1,1,true)
---			if kernels[i].r==1 then
---				spr(1,kernels[i].x,kernels[i].y+5,1,1,true)
---			elseif kernels[i].r==2 then
---				spr(1,kernels[i].x,kernels[i].y+5,1,1,false)
---			elseif kernels[i].r==3 then
---				spr(1,kernels[i].x,kernels[i].y+5,1,1,false,true)
---			elseif kernels[i].r==4 then
---				spr(1,kernels[i].x,kernels[i].y+5,1,1,true,false)
---			end
+		--	spr(1,kernels[i].x,kernels[i].y+5,1,1,kernels[i].r)
+			if kernels[i].r==1 then
+				spr(1,kernels[i].x,kernels[i].y+5,1,1,true)
+			elseif kernels[i].r==2 then
+				spr(1,kernels[i].x,kernels[i].y+5,1,1,false)
+			elseif kernels[i].r==3 then
+				spr(1,kernels[i].x,kernels[i].y+5,1,1,false,true)
+			elseif kernels[i].r==4 then
+				spr(1,kernels[i].x,kernels[i].y+5,1,1,true,false)
+			end
 		end
 	end
 	drawparts()	
@@ -293,9 +302,9 @@ end
 
 function drawstart()
 	cls()
-	print("what size today?",35,10,7)
-	print("⬅️ "..levelnum.." ➡️",35,20,7)
-	print("press 🅾️ to pop",35,30,7)
+	print("what size today?",35,30,7)
+	print("⬅️ "..levelnum.." ➡️",50,40,7)
+	print("press 🅾️ to pop",35,50,7)
 end
 
 function drawgameover()
