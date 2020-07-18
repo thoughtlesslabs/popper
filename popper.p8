@@ -199,7 +199,7 @@ function movekern(mk)
 	mv.dx=rnd(5)
 	mv.dy=rnd(2)
 	if mv.p then
-		if mv.mvtimer>0 and mv.x<100 then
+		if mv.mvtimer>0 then
 		nextx=mv.x+mv.dx
 		nexty=mv.y+mv.dy
 		mv.mvtimer-=1
@@ -209,8 +209,13 @@ function movekern(mk)
 		nexty=mv.y
 	end
 	
+	if nextx <100 then
 	mv.x=nextx
 	mv.y=nexty
+	else 
+		mv.x=mv.x
+		mv.y=mv.y
+	end
 end
 
 function updategameover()
@@ -291,8 +296,6 @@ function drawgameover()
 end
 -->8
 --					to do list
-
---1.		popcorn moves when popped
 --2. 	start menu page
 --3.  animated kernel popping
 --4.  steam rising pre-pop
