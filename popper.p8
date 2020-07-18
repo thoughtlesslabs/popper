@@ -9,7 +9,7 @@ function _init()
 	cls()
 	mode="start"
 	shake=0
-	move=0
+	rkern=1
 	gametimer=0
 	levelnum=1
 	levels={}
@@ -169,7 +169,7 @@ function updategameover()
 end
 
 --pop kernels base on user input
-function updategame() 
+function updategame()
  if popcount<#kernels then
  	if btnp(4) then
  	kernpop()
@@ -177,10 +177,11 @@ function updategame()
  else
  	updategameover()
  end
+ movekern(rkern)
 end
 
 function kernpop()
- rkern=flr(rnd(#kernels)+1)
+rkern=flr(rnd(#kernels)+1)
  if kernels[rkern].p==true then
  	del(kernels,kernels[rkern].n)
 		kernpop()
@@ -189,11 +190,25 @@ function kernpop()
 		shake=0.1
 		kernels[rkern].p=true
 		kernels[rkern].v=false
-		popped(kernels[rkern])
 		popcount+=1
 	end
 end
 
+function movekern(mk)
+	mv=kernels[mk]
+	mv.dx=rnd(2)
+	mv.dy=rnd(2)
+	if mv.p then
+		nextx=mv.x+mv.dx
+		nexty=mv.y+mv.dy
+	else
+		nextx=mv.x
+		nexty=mv.y
+	end
+	
+	mv.x=nextx
+	mv.y=nexty
+end
 
 function updategameover()
 	gametimer-=1
@@ -212,6 +227,8 @@ function addkern(_i)
 	k={}
 	k.x=mid(1,rnd(110),110)
 	k.y=mid(1,rnd(110),110)
+	k.dx=0
+	k.dy=0
 	k.v=true
 	k.p=false
 	k.r=flr(rnd(4)+1)
@@ -240,15 +257,16 @@ function drawgame()
 		if kernels[i].v then
 			spr(2,kernels[i].x+rnd(jit),kernels[i].y+rnd(jit))
 		elseif kernels[i].p then
-			if kernels[i].r==1 then
-				spr(1,kernels[i].x,kernels[i].y+5,1,1,true)
-			elseif kernels[i].r==2 then
-				spr(1,kernels[i].x,kernels[i].y+5,1,1,false)
-			elseif kernels[i].r==3 then
-				spr(1,kernels[i].x,kernels[i].y+5,1,1,false,true)
-			elseif kernels[i].r==4 then
-				spr(1,kernels[i].x,kernels[i].y+5,1,1,true,false)
-			end
+			spr(1,kernels[i].x,kernels[i].y+5,1,1,true)
+--			if kernels[i].r==1 then
+--				spr(1,kernels[i].x,kernels[i].y+5,1,1,true)
+--			elseif kernels[i].r==2 then
+--				spr(1,kernels[i].x,kernels[i].y+5,1,1,false)
+--			elseif kernels[i].r==3 then
+--				spr(1,kernels[i].x,kernels[i].y+5,1,1,false,true)
+--			elseif kernels[i].r==4 then
+--				spr(1,kernels[i].x,kernels[i].y+5,1,1,true,false)
+--			end
 		end
 	end
 	drawparts()	
