@@ -227,19 +227,22 @@ end
 
 function movekern(mk)
 	mv=kernels[mk]
-	mv.dx=flr(rnd(3)+1)
-	mv.dy=flr(rnd(3)+1)
+	mv.dx=flr(rnd(4)+1)
+	mv.dy=-flr(rnd(4)+1)
 	
 	if mv.p then
 		if mv.mvtimer>0 then
-			if mv.dx==3 then
+			if mv.dx==4 then
 				nextx=mv.x+mv.dx
+				nexty=mv.y+mv.dy
+			elseif mv.dx==3 then
+				nextx=mv.x-mv.dx
 				nexty=mv.y+mv.dy
 			elseif mv.dx==2 then
 				nextx=mv.x-mv.dx
-				nexty=mv.y+mv.dy
-			else
-				nextx=mv.x-mv.dx
+				nexty=mv.y-mv.dy
+			elseif mv.dx==1 then
+				nextx=mv.x+mv.dx
 				nexty=mv.y-mv.dy
 			end
 		mv.mvtimer-=1
@@ -249,11 +252,14 @@ function movekern(mk)
 		nexty=mv.y
 	end
 	
-	if nextx <100 then
+	if nextx <100 and nextx>20 then
 	mv.x=nextx
-	mv.y=nexty
-	else 
-		mv.x=mv.x
+	else
+	mv.x=mv.x
+	end
+	if nexty > 20 and nexty <100 then 
+		mv.y=nexty
+	else
 		mv.y=mv.y
 	end
 end
