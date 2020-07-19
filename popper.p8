@@ -134,6 +134,7 @@ function updatestart()
 	popcount=0
 	gametimer=30
 	levelselect()
+	lvlname()
 	jit=0
 	jittering=false
 	if btnp(4) then
@@ -151,6 +152,18 @@ function levelselect()
 		if levelnum < #levels then
 			levelnum+=1
 		end
+	end
+end
+
+function lvlname()
+	if levelnum==1 then
+		levelname="small"
+	elseif levelnum==2 then
+		levelname="medium"
+	elseif levelnum==3 then
+		levelname="large" 
+	elseif levelnum==4 then
+		levelname="x-large"
 	end
 end
 
@@ -319,7 +332,8 @@ function drawstart()
 	spr(16,35,0,10,15)
 	spr(16,0,0,20,15,true)
 	print("what size today?",35,30,7)
-	print("⬅️ "..levelnum.." ➡️",50,40,7)
+	print("  ➡️",75,40,7)
+	print("⬅️ "..levelname,40,40,7)
 	print("press 🅾️ to pop",35,50,7)
 end
 
