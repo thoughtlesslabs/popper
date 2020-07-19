@@ -46,17 +46,6 @@ end
 -->8
 --gimme the juice
 
---kernel jitter
-function jitter(_j)
-	_j.j=true
-	if _j.j then
-	jit={}
-		for i=1,50 do
-			add(jit,rnd(2))
-		end
-	end
-end	
-
 -- particles
 function addpart(_x,_y,_dx,_dy,_type,_maxage,_col)
  local _p = {}
@@ -145,6 +134,7 @@ function updatestart()
 	popcount=0
 	gametimer=30
 	levelselect()
+	jit=0
 	if btnp(4) then
 		mode="game"
 	end
@@ -173,28 +163,35 @@ end
 function updategame()
  if popcount<#kernels then
  	if btnp(4) then
- 	kernpop()
+ 	rkern=flr(rnd(#kernels)+1)
+ 	kernels[rkern].j=true
  	end
  else
  	updategameover()
  end
  movekern(rkern)
- if kernels[rkern].j then
-		kernels[rkern].jtimer-=1
+	if kernels[rkern].j then
+		jitter(rkern)
+	end
+end
+
+function jitter(_j)
+	kernels[_j].jtimer-=1
+	if kernels[_j].jtimer > 0 then
+		jit=rnd(3)
+	else
+		kernels[_j].jtimer=0
+		kernpop()
 	end
 end
 
 function kernpop()
-	rkern=flr(rnd(#kernels)+1)
-	jitter(kernels[rkern])
-	if kernels[rkern].p==true then
-		del(kernels,kernels[rkern].n)
-		kernpop()
+	if kernels[rkern].p then
+		
 	else
 		sfx(0)
 		shake=0.4
 		kernels[rkern].p=true
-		kernels[rkern].v=false
 		popped(kernels[rkern])
 		popcount+=1
 	end
@@ -252,12 +249,10 @@ function addkern(_i)
 	k.y=mid(1,rnd(110),110)
 	k.dx=1
 	k.dy=-1
-	k.v=true
 	k.p=false
 	k.j=false
 	k.jtimer=100
 	k.r=flr(rnd(4)+1)
-	k.n=_i
 	k.mvtimer=10
 	add(kernels,k)
 end
@@ -278,10 +273,18 @@ end
 function drawgame()
 	local i
 	cls(1)
+	print(kernels[rkern].jtimer)
+	print(rkern)
+	print(kernels[rkern].p)
+	print(#kernels)
 	doshake()
 	for i=1,#kernels do
-		if kernels[i].v then
-			spr(2,kernels[i].x+rnd(jit),kernels[i].y+rnd(jit))
+		if kernels[i].p==false then
+			if kernels[i].j then
+			spr(2,kernels[i].x+jit,kernels[i].y+jit)
+			else
+			spr(2,kernels[i].x,kernels[i].y)
+			end
 		elseif kernels[i].p then
 		--	spr(1,kernels[i].x,kernels[i].y+5,1,1,kernels[i].r)
 			if kernels[i].r==1 then
