@@ -1,0 +1,5 @@
+#Ignore Popper Test
+popper-test.p8
+
+#Ignore DS_Store Files
+.DS_Store
