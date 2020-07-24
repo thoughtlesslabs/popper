@@ -47,7 +47,7 @@ end
 --gimme the juice
 
 -- particles
-function addpart(_x,_y,_dx,_dy,_type,_maxage,_col)
+function addpart(_x,_y,_dx,_dy,_type,_maxage,_col,_s)
  local _p = {}
  _p.x=_x
  _p.y=_y
@@ -58,6 +58,8 @@ function addpart(_x,_y,_dx,_dy,_type,_maxage,_col)
  _p.age=0
  _p.col=0
 	_p.colarr=_col
+	_p.s=_s
+	_p.os=_s
  add(part,_p)
 end
 
@@ -68,6 +70,16 @@ function popped(_k)
 		local _dx = cos(_ang)*2
 		local _dy = sin(_ang)*2
 		addpart(_k.x,_k.y+10,_dx,_dy,1,100,{7,5,6})
+	end
+end
+
+-- spawn pufts
+function pufts(_k)
+	for i=0,5 do
+		local _ang = rnd()
+		local _dx = cos(_ang)*5
+		local _dy = sin(_ang)*5
+		addpart(_k.x,_k.y,_dx,_dy,2,10+rnd(25),{7,5,6},2+rnd(3))
 	end
 end
 
@@ -92,6 +104,18 @@ function updateparts()
 			if _p.tpe==1 then
 			_p.dy-=0.009
 			end
+			
+		--shrink
+		if _p.tpe==2 then
+			local _ci=1-_p.age/_p.mage
+			_p.s=_ci*_p.os
+		end
+		
+		--friction
+		if _p.tpe==2 then
+			_p.dx=_p.dx/1.2
+			_p.dy=_p.dy/1.2
+		end	
 
 		--move particle
 			_p.x+=_p.dx
@@ -104,7 +128,11 @@ function drawparts()
 	for i=1,#part do
 		_p=part[i]
 		--pixel particle
-		pset(_p.x,_p.y,_p.col)
+		if _p.tpe==1 then
+			pset(_p.x,_p.y,_p.col)
+		elseif _p.tpe==2 then
+			circfill(_p.x,_p.y,_p.s,_p.col)
+		end
 	end
 end
 
@@ -213,14 +241,16 @@ function pickkern()
 end
 
 function kernpop()
-	if kernels[rkern].p then	
-		kernels[rkern].n=false
-	elseif kernels[rkern].n then	
+ local ck=kernels[rkern]
+	if ck.p then	
+		ck.n=false
+	elseif ck.n then	
+		pufts(ck)
 		sfx(0)
 		shake=0.4
-		popped(kernels[rkern])
+		popped(ck)
 		popcount+=1
-		kernels[rkern].p=true
+		ck.p=true
 	end
 	jittering=false
 end
