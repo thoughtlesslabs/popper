@@ -210,7 +210,7 @@ function updategame()
  else
  	updategameover()
  end
- if kernels[rkern].mvtimer>0 then
+ if kernels[rkern].mvtimer>=0 then
  movekern(rkern)
  end
 	if kernels[rkern].j then
